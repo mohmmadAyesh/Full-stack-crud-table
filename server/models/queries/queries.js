@@ -1,4 +1,7 @@
 const {getDB}=require('../db.js');
+/*
+it will retrieve all records from joined coin_pair and note_volume tables
+*/
 const getAllRecords=async()=>{
     try{
     const db=await getDB();
@@ -9,7 +12,10 @@ const getAllRecords=async()=>{
         console.log("err in selecting",err);
     }
 }
-const updateSomeRecordsQuery = async (new_coin_pair, newPrice, newNote, newVolume, id) => {
+/*
+it will update the entire row from joined  coin_pair and note-volume tables 
+*/
+const updateRecordQuery = async (new_coin_pair, newPrice, newNote, newVolume, id) => {
     console.log(new_coin_pair, newPrice, newNote, newVolume, id);
     try {
         const db = await getDB();
@@ -24,6 +30,10 @@ const updateSomeRecordsQuery = async (new_coin_pair, newPrice, newNote, newVolum
         console.log('Error while updating:', err);
     }
 };
+/*
+this query is for pagination like it will display in the same page the number specified in limit and it 
+it took query string as paginate to get value page number from it
+*/ 
 const getPaginateRecords=async(paginate)=>{
     try{
         const db=await getDB();
@@ -35,7 +45,10 @@ const getPaginateRecords=async(paginate)=>{
         console.log('Error in selecting paginating: ',err);
     }
 }
-const deleteRecordsQuery=async(id)=>{
+/*
+query for deleting a record from coin_pair which is automatically delete the related record at note_volume table
+*/
+const deleteRecordQuery=async(id)=>{
     try{
     const db=await getDB();
     const sql=`delete from coin_pair where id=?;`;
@@ -48,6 +61,9 @@ const deleteRecordsQuery=async(id)=>{
     }
 
 }
+/*
+this query for testing it will retrieved note volume records to ensure that update and delete affecting on every records
+*/
 const GetNoteVolumeRecordsQuery=async()=>{
     try{
         const db=await getDB();
@@ -58,5 +74,5 @@ const GetNoteVolumeRecordsQuery=async()=>{
         console.log('Error in getting note volume');
     }
 }
-module.exports={getAllRecords,updateSomeRecordsQuery,getPaginateRecords,
-    deleteRecordsQuery,GetNoteVolumeRecordsQuery};
+module.exports={getAllRecords,updateRecordQuery,getPaginateRecords,
+    deleteRecordQuery,GetNoteVolumeRecordsQuery};
