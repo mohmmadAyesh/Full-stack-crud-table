@@ -1,13 +1,14 @@
-const {updateSomeRecordsQuery,getAllRecords,getPaginateRecords,deleteRecordQuery,GetNoteVolumeRecordsQuery}=require('../models/queries/queries.js');
+const {updateRecordQuery,getAllRecords,getPaginateRecords,deleteRecordQuery,GetNoteVolumeRecordsQuery
+,SearchByCoinPairQuery,SearchByNoteQuery,SearchByPriceQuery,SearchByVolumeQuery}=require('../models/queries/queries.js');
 /*
 it will update the entire row of joined tables of coin_pair and note_volume then it will send a message indicating whether
 its a success or a fail
 */
-const updateSomeRecords=async (req,res)=>{
+const updateRecord=async (req,res)=>{
     try{
     const{coin_pair,price,note,volume}=req.body;
     const {id}=req.params;
-    await updateSomeRecordsQuery(coin_pair,Number(price),note,volume,Number(id));
+    await updateRecordQuery(coin_pair,Number(price),note,volume,Number(id));
     res.status(200).send({success:true,message:"rows updated successfully"});
     }catch(err){
         res.status(500).send({success:false,message:"something failed"});
@@ -54,7 +55,7 @@ const deleteRecord=async(req,res)=>{
     try{
         const {id}=req.params;
         console.log('id is : ',id);
-        await deleteRecordsQuery(Number(id));
+        await deleteRecordQuery(Number(id));
         res.status(200).send({success:true,message:"records deleted successfully"});
 
     }catch(err){
@@ -65,11 +66,61 @@ const deleteRecord=async(req,res)=>{
 // it will retrieve all records from note_volume table and then display a message whether its a success or a failure
 const getNoteVolumeRecords=async(req,res)=>{
     try{
-        const results=await GetNoteVolumeRecordQuery();
+        const results=await GetNoteVolumeRecordsQuery();
         res.status(200).send({success:true,message:"data retrieved successfully",data:results[0]});
     }catch(err){
         console.log(err);
         res.status(500).send({success:false,message:"data retrieved failed"});
     }
 }
-module.exports={updateSomeRecords,getAll,getPaginate,deleteRecord,getNoteVolumeRecords};
+// it will retrieve all records that its coin_pair starts with the req specified
+const getRecordsFilteredByCoinPair=async(req,res)=>{
+    try{
+        const {coinPair}=req.body;
+        console.log('coin_pair filter',coinPair);
+        const results=await SearchByCoinPairQuery(coinPair);
+        res.status(201).send({success:true,message:"data retrieved successfully",data:results[0]});
+    }catch(err){
+        console.log(err);
+        res.status(500).send({success:false,message:"data retrieved failed"});
+    }
+}
+// it will retrieve all records filtered by price
+const getRecordsFilteredByPrice=async(req,res)=>{
+    try{
+        const {price}=req.body;
+        const results=await SearchByPriceQuery(Number(price));
+        res.status(200).send({success:true,message:"data retrieved successfully",data:results[0]});
+    }catch(err){
+        console.log(err);
+        res.status(500).send({success:false,message:"data retrieved failed"});
+    }
+}
+// it will retrieve all records filtered by notes that starts with note 
+const getRecordsFilteredByNote=async(req,res)=>{
+    try{
+        const {note}=req.body;
+        const results=await SearchByNoteQuery(note);
+        res.status(200).send({success:true,message:"data retrieved successfully",data:results[0]});
+    }catch(err){
+        console.log(err);
+        res.status(500).send({success:false,message:"data retrieved failed"});
+    }
+}
+// it will retrieve all records filtered by volume
+const getRecordsFilteredByVolume=async(req,res)=>{
+    try{
+        const {volume}=req.body;
+        const results=await SearchByVolumeQuery(Number(volume));
+        res.status(200).send({success:true,message:"data retrieved successfully",data:results[0]});
+    }catch(err){
+        console.log(err);
+        res.status(500).send({success:false,message:"data retrieved failed"});
+    }
+}
+module.exports={updateRecord,getAll,getPaginate,deleteRecord,getNoteVolumeRecords,
+getRecordsFilteredByCoinPair,
+getRecordsFilteredByNote,
+getRecordsFilteredByPrice,
+getRecordsFilteredByVolume
+};
