@@ -74,5 +74,61 @@ const GetNoteVolumeRecordsQuery=async()=>{
         console.log('Error in getting note volume');
     }
 }
-module.exports={getAllRecords,updateRecordQuery,getPaginateRecords,
-    deleteRecordQuery,GetNoteVolumeRecordsQuery};
+/*
+this query for searching by coin_pair return all coin_pair  that starts with the parameter
+*/
+const SearchByCoinPairQuery=async(coin_pair)=>{
+    try{
+        const db=await getDB();
+        const sql=`SELECT coin_pair.coin_pair,coin_pair.price,note_volume.volume,note_volume.note FROM coin_pair join note_volume on coin_pair.id=note_volume.coin_pair_id where coin_pair.coin_pair like CONCAT(?,'%')`;
+        const values=[coin_pair];
+        const results=await db.query(sql,values);
+        return results;
+    }catch(err){
+        console.log('Error in searching by coin_pair')
+    }
+}
+/*
+this query for searching by price
+*/
+const SearchByPriceQuery=async(price)=>{
+    try{
+        const db=await getDB();
+        const sql=`SELECT coin_pair.coin_pair,coin_pair.price,note_volume.volume,note_volume.note FROM coin_pair join note_volume on coin_pair.id=note_volume.coin_pair_id where coin_pair.price=?`;
+        const values=[price];
+        const results=await db.query(sql,values);
+        return results;
+    }catch(err){
+        console.log('Error in filtering by price');
+    }
+}
+/*
+this query for searching by note return all note thats startwith the parameter
+*/
+const SearchByNoteQuery=async(note)=>{
+    try{
+        const db=await getDB();
+        const sql=`SELECT coin_pair.coin_pair,coin_pair.price,note_volume.volume,note_volume.note FROM coin_pair join note_volume on coin_pair.id=note_volume.coin_pair_id where note_volume.note CONCAT(?,'%')`;
+        const values=[note];
+        const results=await db.query(sql,values);
+        return results;
+    }catch(err){
+        console.log('Error in filtering by price');
+    }
+}
+/*
+this query for searching by volume
+*/
+const SearchByVolumeQuery=async(volume)=>{
+    try{
+        const db=await getDB();
+        const sql=`SELECT coin_pair.coin_pair,coin_pair.price,note_volume.volume,note_volume.note FROM coin_pair join note_volume on coin_pair.id=note_volume.coin_pair_id where note_volume.volume=?`;
+        const values=[volume];
+        const result=await db.query(sql,values);
+        return result;
+    }catch(err){
+        console.log('Error in filtering by price');
+    }
+}
+module.exports={updateRecordQuery,getAllRecords,updateRecordQuery,getPaginateRecords,
+    deleteRecordQuery,GetNoteVolumeRecordsQuery,SearchByCoinPairQuery,SearchByNoteQuery,SearchByPriceQuery,SearchByVolumeQuery};
