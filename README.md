@@ -6,6 +6,31 @@ A web app that helps you to search through USD/PAIR,price,note and volume allowi
 
 Please note that  it requires that you have node js installed on your pc,it preferable to have version 18 or more
 note that if you have problem with express js try to use node version 16 on server folder only like run 
+### steps for installing nvm for UNIX BASED SYSTEM(MAC OS,LINIX)
+-   1- Install HOMEBREW
+        if you don't have homebrew run this command in the terminal
+        ```
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homerew/install/HEAD/install.sh)"
+        ```
+-   2- Install nvm via HOMEBREW
+        ```
+        brew install nvm
+        ```
+    3-Add the following lines to your shell profile file (e.g., ~/.bashrc, ~/.zshrc, or ~/.bash_profile):
+        ```
+        export NVM_DIR=~/.nvm
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+        ```
+    4-to check you need to type
+    ```
+    nvm --version
+    ```
+### steps for installing nvm for windows 
+    1-Download the installer 
+        go to [nvm windows release versions] (`https://github.com/coreybutler/nvm-windows/releases`)
+    2-extract nvm-setup.zip file and run nvm-setup.exe
+### congratulations you have now nvm
 ```
 nvm install <version>
 nvm use 16
@@ -27,8 +52,17 @@ first running the  backend :
     DB_HOST=your appropriate host
     DB_USER=your local username 
     DB_PASS=your local password
-###
 5- run npm i in the folder<br>
+### ⚡warning: you need to install mysql before you run npm run db and
+    for UNIX BASED system (mac OS /LINIX):
+        if you want to install myql you can use homebrew that we talked about earlier just run
+            ```
+            brew install mysql
+            ```
+    for windows:
+        go to [My sql community downloads] (`https://dev.mysql.com/downloads/mysql/`)
+        click on download the installer and run it
+
 6-then you need to create database by running those scripts by typing
 ```
 npm run db
