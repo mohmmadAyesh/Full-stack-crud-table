@@ -1,8 +1,8 @@
 import axios from 'axios';
 const api=axios.create({
-    baseURL:process.env.REACT_APP_API_BASE_URL,
+    baseURL:process.env.NEXT_PUBLIC_API_BASE_URL,
 });
-export const fetchData=async(paginate)=>{
+export const loadData=async(paginate)=>{
     const response=await api.get(`api/paginate?paginate=${paginate}`);
     return response.data.data;
 }
@@ -14,7 +14,7 @@ export const filterData=async(filterType,filterValue,paginate)=>{
     return response.data.data;
 }
 export const updateRecord=async(id,data)=>{
-    const response=await api.put(`/api/record/${id}`,data);
+    const response=await api.put(`/api/update/${id}`,data);
     return response.data;
 }
 export const deleteRecord=async(id)=>{

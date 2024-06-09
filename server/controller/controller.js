@@ -8,6 +8,7 @@ const updateRecord=async (req,res)=>{
     try{
     const{coin_pair,price,note,volume}=req.body;
     const {id}=req.params;
+    console.log('############',req.body);
     await updateRecordQuery(coin_pair,Number(price),note,volume,Number(id));
     res.status(200).send({success:true,message:"rows updated successfully"});
     }catch(err){
@@ -76,10 +77,10 @@ const getNoteVolumeRecords=async(req,res)=>{
 // it will retrieve all records that its coin_pair starts with the req specified
 const getRecordsFilteredByCoinPair=async(req,res)=>{
     try{
-        const {coinPair}=req.body;
-        console.log('coin_pair filter',coinPair);
-        const results=await SearchByCoinPairQuery(coinPair);
-        res.status(201).send({success:true,message:"data retrieved successfully",data:results[0]});
+        const {coin_pair,paginate}=req.body;
+        console.log('coin_pair filter',req.body);
+        const results=await SearchByCoinPairQuery(coin_pair,Number(paginate));
+        res.status(201).send({success:true,message:"data retrieved successfully",data:results});
     }catch(err){
         console.log(err);
         res.status(500).send({success:false,message:"data retrieved failed"});
@@ -88,9 +89,9 @@ const getRecordsFilteredByCoinPair=async(req,res)=>{
 // it will retrieve all records filtered by price
 const getRecordsFilteredByPrice=async(req,res)=>{
     try{
-        const {price}=req.body;
-        const results=await SearchByPriceQuery(Number(price));
-        res.status(200).send({success:true,message:"data retrieved successfully",data:results[0]});
+        const {price,paginate}=req.body;
+        const results=await SearchByPriceQuery(Number(price),Number(paginate));
+        res.status(201).send({success:true,message:"data retrieved successfully",data:results});
     }catch(err){
         console.log(err);
         res.status(500).send({success:false,message:"data retrieved failed"});
@@ -99,9 +100,9 @@ const getRecordsFilteredByPrice=async(req,res)=>{
 // it will retrieve all records filtered by notes that starts with note 
 const getRecordsFilteredByNote=async(req,res)=>{
     try{
-        const {note}=req.body;
-        const results=await SearchByNoteQuery(note);
-        res.status(200).send({success:true,message:"data retrieved successfully",data:results[0]});
+        const {note,paginate}=req.body;
+        const results=await SearchByNoteQuery(note,Number(paginate));
+        res.status(201).send({success:true,message:"data retrieved successfully",data:results});
     }catch(err){
         console.log(err);
         res.status(500).send({success:false,message:"data retrieved failed"});
@@ -110,9 +111,11 @@ const getRecordsFilteredByNote=async(req,res)=>{
 // it will retrieve all records filtered by volume
 const getRecordsFilteredByVolume=async(req,res)=>{
     try{
-        const {volume}=req.body;
-        const results=await SearchByVolumeQuery(Number(volume));
-        res.status(200).send({success:true,message:"data retrieved successfully",data:results[0]});
+        const {volume,paginate}=req.body;
+        console.log(paginate);
+        const results=await SearchByVolumeQuery(Number(volume),Number(paginate));
+        console.log(results);
+        res.status(201).send({success:true,message:"data retrieved successfully",data:results});
     }catch(err){
         console.log(err);
         res.status(500).send({success:false,message:"data retrieved failed"});

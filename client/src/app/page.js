@@ -7,6 +7,7 @@ import SearchField from './components/SearchField/SearchField';
 import { ActionButton } from './components/Button/button.styles';
 import { useState,useRef, useEffect } from 'react';
 import Popup from './components/Popup/Popup';
+import { loadData,filterData,updateRecord,deleteRecord } from './api/api';
 export default function Home() {
   const [openPopUp,setOpenPopUp] =useState(false);
   const [currentRecordToUpdate,setCurrentRecordToUpdate] =useState({});
@@ -18,21 +19,17 @@ export default function Home() {
   const [totalRecords, setTotalRecords] = useState(0);
   const fetchData = async (filterType = '', filterValue = '') => {
     try {
-      let response;
+      let data;
       if (filterType && filterValue) {
         console.log(`http://localhost:5000/api/filter/${filterType}`);
         console.log({
           [filterType]: filterValue,
           paginate: currentPage
         });
-        response = await axios.post(`http://localhost:5000/api/filter/${filterType}`, {
-          [filterType]: filterValue,
-          paginate: currentPage
-        });
+        data=await filterData(filterType,filterValue,currentPage);
       } else {
-        response = await axios.get(`http://localhost:5000/api/paginate?paginate=${currentPage}`);
+        data = await loadData(currentPage);
       }
-      const data = response.data.data;
       setRecords(data);
       setTotalRecords(data.length);
       if(!filterType && !filterValue){
@@ -69,7 +66,7 @@ export default function Home() {
     console.log('i got triggered');
     console.log(currentRecordToUpdate.id);
     console.log(e.elements);
-    const response=await axios.put(`http://localhost:5000/api/update/${currentRecordToUpdate.id}`,
+    const response=await updateRecord(currentRecordToUpdate.id,
     {
       coin_pair:e.target.elements.coin_pair.value,
       price:e.target.elements.price.value,
@@ -81,7 +78,7 @@ export default function Home() {
     setOpenPopUp(false);
   };
   const handleDelete=async(id)=>{
-    await axios.delete(`http://localhost:5000/api/delete/${id}`);
+    await deleteRecord(id);
     await fetchData(lastFilter.type,lastFilter.value);
   }
   const filterBy=async (ref,value)=>{

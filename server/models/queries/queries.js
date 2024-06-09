@@ -5,7 +5,7 @@ it will retrieve all records from joined coin_pair and note_volume tables
 const getAllRecords=async()=>{
     try{
     const db=await getDB();
-    const [results]=await db.query("SELECT coin_pair.coin_pair,coin_pair.price,note_volume.volume,note_volume.note FROM coin_pair join note_volume on coin_pair.id=note_volume.coin_pair_id ");
+    const [results]=await db.query("SELECT coin_pair.id,coin_pair.coin_pair,coin_pair.price,note_volume.volume,note_volume.note FROM coin_pair join note_volume on coin_pair.id=note_volume.coin_pair_id ");
     console.log(results);
     return results;
     }catch(err){
@@ -37,8 +37,8 @@ it took query string as paginate to get value page number from it
 const getPaginateRecords=async(paginate)=>{
     try{
         const db=await getDB();
-        const sql=`select coin_pair.coin_pair,coin_pair.price, note_volume.note, note_volume.volume from coin_pair join note_volume on coin_pair.id=note_volume.coin_pair_id limit ?,?`;
-        const values=[(paginate-1)*2,2];
+        const sql=`select coin_pair.id,coin_pair.coin_pair,coin_pair.price, note_volume.note, note_volume.volume from coin_pair join note_volume on coin_pair.id=note_volume.coin_pair_id order by coin_pair.id limit ?,?`;
+        const values=[(paginate-1)*6,6];
         const [results]=await db.query(sql, values);
         return results;
     }catch(err){
@@ -77,26 +77,41 @@ const GetNoteVolumeRecordsQuery=async()=>{
 /*
 this query for searching by coin_pair return all coin_pair  that starts with the parameter
 */
-const SearchByCoinPairQuery=async(coin_pair)=>{
+const SearchByCoinPairQuery=async(coin_pair,paginate)=>{
     try{
         const db=await getDB();
-        const sql=`SELECT coin_pair.coin_pair,coin_pair.price,note_volume.volume,note_volume.note FROM coin_pair join note_volume on coin_pair.id=note_volume.coin_pair_id where coin_pair.coin_pair like CONCAT(?,'%')`;
-        const values=[coin_pair];
+        const sql = `SELECT coin_pair.id, coin_pair.coin_pair, coin_pair.price, note_volume.volume, note_volume.note
+                     FROM coin_pair
+                     JOIN note_volume ON coin_pair.id = note_volume.coin_pair_id
+                     WHERE coin_pair.coin_pair LIKE CONCAT(?, '%')
+                     ORDER BY coin_pair.id
+                     LIMIT ?, ?`;
+        const values=[coin_pair,(paginate-1)*6,6];
+        console.log(values);
         const results=await db.query(sql,values);
-        return results;
+        if(results.length===0){
+            return [];
+        }
+        return results[0];
     }catch(err){
-        console.log('Error in searching by coin_pair')
+        console.log('Error in searching by coin_pair: ',err);
     }
 }
 /*
 this query for searching by price
 */
-const SearchByPriceQuery=async(price)=>{
+const SearchByPriceQuery=async(price,paginate)=>{
     try{
         const db=await getDB();
-        const sql=`SELECT coin_pair.coin_pair,coin_pair.price,note_volume.volume,note_volume.note FROM coin_pair join note_volume on coin_pair.id=note_volume.coin_pair_id where coin_pair.price=?`;
-        const values=[price];
-        const results=await db.query(sql,values);
+        const sql=`SELECT coin_pair.id,coin_pair.coin_pair,coin_pair.price,note_volume.volume,note_volume.note FROM coin_pair join note_volume on coin_pair.id=note_volume.coin_pair_id where coin_pair.price=? order by coin_pair.id
+        limit ?,?`;
+        console.log('paginate: ',);
+        const values=[price,(paginate-1)*6,6];
+        const [results]=await db.query(sql,values);
+        console.log(results);
+        if(results.length===0){
+            return [];
+        }
         return results;
     }catch(err){
         console.log('Error in filtering by price');
@@ -105,30 +120,47 @@ const SearchByPriceQuery=async(price)=>{
 /*
 this query for searching by note return all note thats startwith the parameter
 */
-const SearchByNoteQuery=async(note)=>{
+const SearchByNoteQuery=async(note,paginate)=>{
     try{
         const db=await getDB();
-        const sql=`SELECT coin_pair.coin_pair,coin_pair.price,note_volume.volume,note_volume.note FROM coin_pair join note_volume on coin_pair.id=note_volume.coin_pair_id where note_volume.note CONCAT(?,'%')`;
-        const values=[note];
-        const results=await db.query(sql,values);
+        const sql=`SELECT coin_pair.id,coin_pair.coin_pair, coin_pair.price, note_volume.volume, note_volume.note
+        FROM coin_pair
+        JOIN note_volume ON coin_pair.id = note_volume.coin_pair_id
+        WHERE note_volume.note LIKE CONCAT(?, '%') order by coin_pair.id limit ?,?;
+        `;
+        const values=[note,(paginate-1)*6,6];
+        console.log(values);
+        const [results]=await db.query(sql,values);
+        if(results.length===0){
+            return [];
+        }
         return results;
     }catch(err){
-        console.log('Error in filtering by price');
+        console.log('Error in filtering by Note');
     }
 }
 /*
 this query for searching by volume
 */
-const SearchByVolumeQuery=async(volume)=>{
-    try{
-        const db=await getDB();
-        const sql=`SELECT coin_pair.coin_pair,coin_pair.price,note_volume.volume,note_volume.note FROM coin_pair join note_volume on coin_pair.id=note_volume.coin_pair_id where note_volume.volume=?`;
-        const values=[volume];
-        const result=await db.query(sql,values);
+const SearchByVolumeQuery = async (volume, paginate) => {
+    try {
+        const db = await getDB();
+        console.log(`paginate: ${typeof paginate} and volume: ${typeof volume}`);
+        const sql = `SELECT coin_pair.coin_pair, coin_pair.price, note_volume.volume, note_volume.note 
+                     FROM coin_pair 
+                     JOIN note_volume ON coin_pair.id = note_volume.coin_pair_id 
+                     WHERE note_volume.volume = ? 
+                     ORDER BY coin_pair.id 
+                     LIMIT ?, ?`;
+        const values = [volume, (paginate - 1) * 6, 6];
+        const [result] = await db.query(sql, values); // Destructure to get result array
+        if (result.length === 0) {
+            return [];
+        }
         return result;
-    }catch(err){
-        console.log('Error in filtering by price');
+    } catch (err) {
+        console.error('Error in filtering by volume:', err);
     }
-}
+};
 module.exports={updateRecordQuery,getAllRecords,updateRecordQuery,getPaginateRecords,
     deleteRecordQuery,GetNoteVolumeRecordsQuery,SearchByCoinPairQuery,SearchByNoteQuery,SearchByPriceQuery,SearchByVolumeQuery};
