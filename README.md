@@ -27,6 +27,7 @@ first running the  backend :
     DB_HOST=your appropriate host
     DB_USER=your local username 
     DB_PASS=your local password
+###
 5- run npm i in the folder
 6-then you need to create database by running those scripts by typing
 ```
@@ -41,6 +42,7 @@ npm start
 cd ..
 cd client
 ```
+##########
 8-run npm i inside client folder
 9-then you need to set .env file and set the server link like you write in previous .env file the value of DB_HOST link and set that in 
 NEXT_PUBLIC_API_BASE_URL environment variable
