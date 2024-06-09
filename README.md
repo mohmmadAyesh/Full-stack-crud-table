@@ -53,13 +53,13 @@ first running the  backend :
     DB_USER=your local username 
     DB_PASS=your local password
 5- run npm i in the folder<br>
-### ⚡warning: you need to install mysql before you run npm run db and
-    for UNIX BASED system (mac OS /LINIX):
+### ⚡warning: you need to install mysql before you run npm run db
+    1-for UNIX BASED system (mac OS /LINIX):
         if you want to install myql you can use homebrew that we talked about earlier just run
             ```
             brew install mysql
             ```
-    for windows:
+    2-for windows:
         go to [My sql community downloads] (`https://dev.mysql.com/downloads/mysql/`)
         click on download the installer and run it
 
