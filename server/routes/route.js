@@ -3,7 +3,8 @@ const {updateRecord,getAll,getPaginate,deleteRecord,getNoteVolumeRecords,
 getRecordsFilteredByCoinPair,
 getRecordsFilteredByNote,
 getRecordsFilteredByPrice,
-getRecordsFilteredByVolume
+getRecordsFilteredByVolume,
+createRecord
 
 }=require('../controller/controller.js');
 const router=express.Router();
@@ -23,6 +24,8 @@ router.post('/filter/price',getRecordsFilteredByPrice);
 router.post('/filter/note',getRecordsFilteredByNote);
 // filtering by volume
 router.post('/filter/volume',getRecordsFilteredByVolume);
+// create record
+router.post('/create',createRecord);
 //testing routes
 router.get('/test/note',getNoteVolumeRecords);
 module.exports=router;
