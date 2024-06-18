@@ -162,5 +162,30 @@ const SearchByVolumeQuery = async (volume, paginate) => {
         console.error('Error in filtering by volume:', err);
     }
 };
+const createRecordQuery=async(coin_pair,price,note,volume)=>{
+    try{
+        const db=await getDB();
+        let values=[];
+        let sql;
+        let result;
+        sql=`INSERT INTO coin_pair (coin_pair, price) VALUES (?, ?)`
+        values=[coin_pair,price];
+        result=await db.query(sql,values);
+        const id=result[0].insertId
+        sql=`INSERT into note_volume(note,volume,coin_pair_id) values(?,?,?)`;
+        values=[note,volume,id];
+        result=await db.query(sql,values);
+        console.log(result);
+        return result;
+
+
+    }catch(err){
+        console.log(`error is inserting records err:  ${err}`);
+    }
+
+}
 module.exports={updateRecordQuery,getAllRecords,updateRecordQuery,getPaginateRecords,
-    deleteRecordQuery,GetNoteVolumeRecordsQuery,SearchByCoinPairQuery,SearchByNoteQuery,SearchByPriceQuery,SearchByVolumeQuery};
+    deleteRecordQuery,GetNoteVolumeRecordsQuery,SearchByCoinPairQuery,SearchByNoteQuery,SearchByPriceQuery,SearchByVolumeQuery,
+    createRecordQuery
+
+};
