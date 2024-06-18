@@ -5,60 +5,55 @@ import axios from 'axios';
 import Table from './components/Table/Table';
 import SearchField from './components/SearchField/SearchField';
 import { ActionButton } from './components/Button/button.styles';
-import { useState,useRef, useEffect } from 'react';
+import { useState, useRef , useEffect } from 'react';
 import Popup from './components/Popup/Popup';
-import { loadData,filterData,updateRecord,deleteRecord } from './api/api';
+import { loadData, filterData , updateRecord , deleteRecord , createRecord } from './api/api';
+import CreatePopup from './components/CreatePopUp/CreatePopup';
+import { Label } from './components/Popup/popup.styles';
 export default function Home() {
   const [openPopUp,setOpenPopUp] =useState(false);
   const [currentRecordToUpdate,setCurrentRecordToUpdate] =useState({});
-  const [originalData,setOriginalData]=useState();
-  const [records,setRecords]=useState(originalData);
-  const [currentPage,setCurrentPage]=useState(1);
-  const [itemsPerPage]=useState(6);
+  const [data, setData] = useState({ original: [], filtered: [] });
+  const [pagination, setPagination] = useState({ currentPage: 1, itemsPerPage: 6 });
   const [lastFilter,setLastFilter]=useState({type:'',value:''});
   const [totalRecords, setTotalRecords] = useState(0);
+  const [openCreate,setOpenCreate]=useState(false);
+  const attributes=['coin_pair','price','note','volume'];
   const fetchData = async (filterType = '', filterValue = '') => {
     try {
-      let data;
+      let fetchedData;
       if (filterType && filterValue) {
-        console.log(`http://localhost:5000/api/filter/${filterType}`);
-        console.log({
-          [filterType]: filterValue,
-          paginate: currentPage
-        });
-        data=await filterData(filterType,filterValue,currentPage);
+        fetchedData=await filterData(filterType,filterValue,pagination.currentPage);
       } else {
-        data = await loadData(currentPage);
+        fetchedData = await loadData(pagination.currentPage);
       }
-      setRecords(data);
-      setTotalRecords(data.length);
-      if(!filterType && !filterValue){
-        setOriginalData(data);
-      }
-      setOriginalData(data);
+      setData(prevData=>{return {...prevData,filtered:fetchedData,original:!filterType && !filterValue ? data : prevData.original}});
+      setTotalRecords(fetchedData.length);
     } catch (err) {
       console.error('Error fetching data: ', err);
     }
   };
   useEffect(()=>{
     fetchData(lastFilter.type, lastFilter.value);
-  },[currentPage,lastFilter]);
+  },[pagination.currentPage,lastFilter]);
   const reset=async()=>{
     setLastFilter({type:'',value:''});
-    setCurrentPage(1);
+    setPagination({...pagination,currentPage:1});
     await fetchData();
   }
   const handleNextPage=()=>{
-     setCurrentPage((prevPage)=>prevPage+1);
+    setPagination(prev=>{
+      return {...prev,currentPage:(prev.currentPage+1)}
+    })
 
   }
   const handlePrevPage=()=>{
-    setCurrentPage((prev)=>{
-          if(prev>1){
-            return prev-1;
-          }
-          return prev;
-        });
+    setPagination((prev)=>{
+      if(prev.currentPage>1){
+        return {...prev,currentPage:(prev.currentPage-1)}
+      }
+      return prev;
+    })
     
   }
   const handleUpdate = async(e) => {
@@ -77,6 +72,19 @@ export default function Home() {
     await fetchData(lastFilter.type,lastFilter.value);
     setOpenPopUp(false);
   };
+  const handleCreate=async(e)=>{
+    e.preventDefault();
+    const response=createRecord(
+      {
+        coin_pair:e.target.elements.coin_pair.value,
+        price:e.target.elements.price.value,
+        note:e.target.elements.note.value,
+        volume:e.target.elements.volume.value,
+      }
+    )
+    await fetchData(lastFilter.type,lastFilter.value);
+    setOpenCreate(false);
+  }
   const handleDelete=async(id)=>{
     await deleteRecord(id);
     await fetchData(lastFilter.type,lastFilter.value);
@@ -100,28 +108,25 @@ export default function Home() {
     <div class='container'>
     <h1>Coin Pair Table</h1>
     <div class='search-field-container'>
-    <div className='search-field-wrapper'>
-    <SearchField action={filterBy} value='coin_pair'/>
-    </div>
-    <div className='search-field-wrapper'>
-    <SearchField action={filterBy} value='price'/>
-    </div>
-    <div className='search-field-wrapper'>
-    <SearchField action={filterBy} value='note'/>
-    </div>
-    <div className='search-field-wrapper'>
-    <SearchField action={filterBy} value='volume'/>
+    {attributes.map((attr,index)=>(
+      <div className='search-field-wrapper'>
+      <SearchField key={index} action={filterBy} value={attr}/>
+      </div>
+    ))}
+    <div class='search-field-wrapper'>
+      <Label onClick={(e)=>{setOpenCreate(true)}}>create</Label>
     </div>
     </div>
-    <Table setOpenPopUp={setOpenPopUp} data={records} setCurrentRecordToUpdate={setCurrentRecordToUpdate} setDelete={handleDelete}/>
+    <Table setOpenPopUp={setOpenPopUp} data={data.filtered} setCurrentRecordToUpdate={setCurrentRecordToUpdate} setDelete={handleDelete}/>
   {openPopUp && <Popup  currentRecordToUpdate={currentRecordToUpdate} handleUpdate={handleUpdate}/>}
+  {openCreate && <CreatePopup   handleCreate={handleCreate}/>}
   
   <div className='PaginationBlock'>
   <div>
-        <button onClick={handlePrevPage} disabled={currentPage === 1}>
+        <button onClick={handlePrevPage} disabled={pagination.currentPage === 1}>
           Prev Page
         </button>
-        <button onClick={handleNextPage} disabled={totalRecords < itemsPerPage}>
+        <button onClick={handleNextPage} disabled={totalRecords < pagination.itemsPerPage}>
           Next Page
         </button>
       </div>
