@@ -1,9 +1,11 @@
 const {updateRecordQuery,getAllRecords,getPaginateRecords,deleteRecordQuery,GetNoteVolumeRecordsQuery
-,SearchByCoinPairQuery,SearchByNoteQuery,SearchByPriceQuery,SearchByVolumeQuery}=require('../models/queries/queries.js');
+,SearchByCoinPairQuery,SearchByNoteQuery,SearchByPriceQuery,SearchByVolumeQuery,
+createRecordQuery}=require('../models/queries/queries.js');
 /*
 it will update the entire row of joined tables of coin_pair and note_volume then it will send a message indicating whether
 its a success or a fail
 */
+const  CustomError =require('../utils/CustomError.js');
 const updateRecord=async (req,res)=>{
     try{
     const{coin_pair,price,note,volume}=req.body;
@@ -12,7 +14,7 @@ const updateRecord=async (req,res)=>{
     await updateRecordQuery(coin_pair,Number(price),note,volume,Number(id));
     res.status(200).send({success:true,message:"rows updated successfully"});
     }catch(err){
-        res.status(500).send({success:false,message:"something failed"});
+        next(new CustomError('Something went wrong while updating',500,false));
     }
 }
 /*
@@ -26,7 +28,7 @@ const getAll=async(req,res)=>{
     }
     catch(err){
     console.log(err);
-    res.status(500).send({success:false,message:"something failed in retrieving records"});
+    next(new CustomError("something failed in retrieving records"));
     }
 }
 /* this query is for pagination like it will display in the same page the number specified in limit and it 
@@ -37,10 +39,11 @@ const getPaginate=async(req,res)=>{
         const paginate=Number(req.query.paginate);
         console.log(paginate);
         if(!paginate){
-           return  res.status(400).send({success:false,message:"please provide a paginate"});
+            throw new CustomError('please provide a paginate',400);
+          
         }
         if(paginate<=0){
-            return res.status(400).send({success:false,message:"paginate cannot be less than one"});
+            throw new CustomError('paginate cannot be less than one',400);
         }
 
         const results=await getPaginateRecords(paginate);
@@ -48,7 +51,7 @@ const getPaginate=async(req,res)=>{
         return res.status(200).send({success:true,message:"rows retrieved paginate successfully",data:results});
     }catch(err){
         console.log(err);
-        return res.status(500).send({success:false,message:"something failed in bringing paginated data"});
+        next(new CustomError('something failed in bringing paginated data'));
     }
 }
 // it will delete single record with id specified
@@ -61,7 +64,8 @@ const deleteRecord=async(req,res)=>{
 
     }catch(err){
         console.log(err);
-        res.status(500).send({success:false,message:"delete records failed"});
+        next(new CustomError('delete records failed'));
+    
     }
 }
 // it will retrieve all records from note_volume table and then display a message whether its a success or a failure
@@ -71,7 +75,7 @@ const getNoteVolumeRecords=async(req,res)=>{
         res.status(200).send({success:true,message:"data retrieved successfully",data:results[0]});
     }catch(err){
         console.log(err);
-        res.status(500).send({success:false,message:"data retrieved failed"});
+        next(new CustomError('data retrieved failed'));
     }
 }
 // it will retrieve all records that its coin_pair starts with the req specified
@@ -83,7 +87,7 @@ const getRecordsFilteredByCoinPair=async(req,res)=>{
         res.status(201).send({success:true,message:"data retrieved successfully",data:results});
     }catch(err){
         console.log(err);
-        res.status(500).send({success:false,message:"data retrieved failed"});
+        next(new CustomError('data retrieved failed'));
     }
 }
 // it will retrieve all records filtered by price
@@ -94,7 +98,7 @@ const getRecordsFilteredByPrice=async(req,res)=>{
         res.status(201).send({success:true,message:"data retrieved successfully",data:results});
     }catch(err){
         console.log(err);
-        res.status(500).send({success:false,message:"data retrieved failed"});
+        next(new CustomError('data retrieved failed'));
     }
 }
 // it will retrieve all records filtered by notes that starts with note 
@@ -105,7 +109,7 @@ const getRecordsFilteredByNote=async(req,res)=>{
         res.status(201).send({success:true,message:"data retrieved successfully",data:results});
     }catch(err){
         console.log(err);
-        res.status(500).send({success:false,message:"data retrieved failed"});
+        next(new CustomError('data retrieved failed'));
     }
 }
 // it will retrieve all records filtered by volume
@@ -118,12 +122,24 @@ const getRecordsFilteredByVolume=async(req,res)=>{
         res.status(201).send({success:true,message:"data retrieved successfully",data:results});
     }catch(err){
         console.log(err);
-        res.status(500).send({success:false,message:"data retrieved failed"});
+        next(new CustomError('data retrieved failed'));
+    }
+}
+const createRecord=async(req,res)=>{
+    try{
+        const {coin_pair,price,note,volume}=req.body;
+        console.log('what we sended',req.body);
+        const result=await createRecordQuery(coin_pair,Number(price),note,volume);
+        return res.status(201).send({success:true,message:"data created successfully",data:result});
+    }catch(err){
+        console.log(err);
+        next(new CustomError('data insert failed'));
     }
 }
 module.exports={updateRecord,getAll,getPaginate,deleteRecord,getNoteVolumeRecords,
 getRecordsFilteredByCoinPair,
 getRecordsFilteredByNote,
 getRecordsFilteredByPrice,
-getRecordsFilteredByVolume
+getRecordsFilteredByVolume,
+createRecord
 };
