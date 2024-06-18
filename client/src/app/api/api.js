@@ -21,3 +21,7 @@ export const deleteRecord=async(id)=>{
     const response=await api.delete(`/api/delete/${id}`);
     return response.data;
 }
+export const createRecord=async(data)=>{
+    const response=await api.post(`/api/create`,data);
+    return  response.data;
+}
