@@ -7,7 +7,7 @@ const WrapperTable=styled.table`
 `;
 const Thead=styled.thead`
     background-color: #f1f1f1;
-  `;
+`;
 const Th=styled.th`
     padding: 10px;
     text-align: left;

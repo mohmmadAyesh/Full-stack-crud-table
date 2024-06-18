@@ -2,7 +2,7 @@
 import React from 'react';
 import { ActionButton } from './button.styles';
 
-const Button = ({svg,children,Action}) => {
+const Button = ({ svg, children, Action }) => {
   return (
     <ActionButton onClick={Action}>
         {children}
@@ -10,4 +10,4 @@ const Button = ({svg,children,Action}) => {
   )
 }
 
-export default Button
+export default Button;

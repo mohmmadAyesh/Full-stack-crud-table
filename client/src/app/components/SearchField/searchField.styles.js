@@ -9,7 +9,7 @@ const Wrapper=styled.div`
     }
 `;
 const Label=styled.label`
-display: inline-block;
+    display: inline-block;
     font-size: 0.75rem;
     margin-right: 10px;
     color: white;
@@ -22,9 +22,9 @@ display: inline-block;
         font-size: 0.625rem;
         padding: 8px;
     }
-&:hover{
-    background: rgb(3, 72, 72);
-}
+    &:hover{
+        background: rgb(3, 72, 72);
+    }
 `;
 const Input=styled.input`
     width: 100%;
@@ -38,4 +38,4 @@ const Input=styled.input`
         font-size: 0.875rem;
     }
 `;
-export {Wrapper,Label,Input};
+export { Wrapper, Label, Input };
