@@ -15,7 +15,7 @@ it will update the entire row of joined tables of coin_pair and note_volume then
 its a success or a fail
 */
 const  CustomError = require('../utils/CustomError.js');
-const updateRecord = async (req,res)=>{
+const updateRecord = async (req,res,next)=>{
     try{
     const{ coin_pair, price, note, volume } = req.body;
     const { id } = req.params;
@@ -30,7 +30,7 @@ const updateRecord = async (req,res)=>{
 it will return all joined records from two tables the coin_pair_price and note_volume table
 and send message to indicate whether its a success or a fail if it a success then it will load all data
 */
-const getAll=async(req,res)=>{
+const getAll=async(req,res,next)=>{
     try{
         const records = await getAllRecords();
         res.status(200).send({ success:true, message:"rows retrieved successfully", data:records });
@@ -43,7 +43,7 @@ const getAll=async(req,res)=>{
 /* this query is for pagination like it will display in the same page the number specified in limit and it 
 it took query string as paginate to get value page number from it
 */
-const getPaginate=async(req,res) => {
+const getPaginate=async(req,res,next) => {
     try{
         const paginate = Number(req.query.paginate);
         console.log(paginate);
@@ -64,7 +64,7 @@ const getPaginate=async(req,res) => {
     }
 }
 // it will delete single record with id specified
-const deleteRecord = async(req,res) => {
+const deleteRecord = async(req,res,next) => {
     try{
         const {id} = req.params;
         console.log('id is : ',id);
@@ -78,7 +78,7 @@ const deleteRecord = async(req,res) => {
     }
 }
 // it will retrieve all records from note_volume table and then display a message whether its a success or a failure
-const getNoteVolumeRecords=async(req,res) => {
+const getNoteVolumeRecords=async(req,res,next) => {
     try{
         const results = await GetNoteVolumeRecordsQuery();
         res.status(200).send({ success:true, message:"data retrieved successfully", data:results[0] });
@@ -88,7 +88,7 @@ const getNoteVolumeRecords=async(req,res) => {
     }
 }
 // it will retrieve all records that its coin_pair starts with the req specified
-const getRecordsFilteredByCoinPair = async(req,res) => {
+const getRecordsFilteredByCoinPair = async(req,res,next) => {
     try{
         const { coin_pair, paginate } = req.body;
         console.log('coin_pair filter',req.body);
@@ -100,7 +100,7 @@ const getRecordsFilteredByCoinPair = async(req,res) => {
     }
 }
 // it will retrieve all records filtered by price
-const getRecordsFilteredByPrice = async(req,res) => {
+const getRecordsFilteredByPrice = async(req,res,next) => {
     try{
         const { price , paginate }=req.body;
         const results=await SearchByPriceQuery(Number(price),Number(paginate));
@@ -111,7 +111,7 @@ const getRecordsFilteredByPrice = async(req,res) => {
     }
 }
 // it will retrieve all records filtered by notes that starts with note 
-const getRecordsFilteredByNote=async(req,res) => {
+const getRecordsFilteredByNote=async(req,res,next) => {
     try{
         const { note, paginate } = req.body;
         const results=await SearchByNoteQuery(note,Number(paginate));
@@ -122,7 +122,7 @@ const getRecordsFilteredByNote=async(req,res) => {
     }
 }
 // it will retrieve all records filtered by volume
-const getRecordsFilteredByVolume=async(req,res)=>{
+const getRecordsFilteredByVolume=async(req,res,next)=>{
     try{
         const { volume, paginate }=req.body;
         console.log(paginate);
@@ -134,7 +134,7 @@ const getRecordsFilteredByVolume=async(req,res)=>{
         next(new CustomError('data retrieved failed'));
     }
 }
-const createRecord = async(req,res)=>{
+const createRecord = async(req,res,next)=>{
     try{
         const { coin_pair, price, note, volume } = req.body;
         console.log('what we sended',req.body);
