@@ -2,7 +2,7 @@ const {getDB}=require('../db.js');
 /*
 it will retrieve all records from joined coin_pair and note_volume tables
 */
-const getAllRecords=async()=>{
+const getAllRecords=async() => {
     try{
     const db=await getDB();
     const [results]=await db.query("SELECT coin_pair.id,coin_pair.coin_pair,coin_pair.price,note_volume.volume,note_volume.note FROM coin_pair join note_volume on coin_pair.id=note_volume.coin_pair_id ");
@@ -34,11 +34,11 @@ const updateRecordQuery = async (new_coin_pair, newPrice, newNote, newVolume, id
 this query is for pagination like it will display in the same page the number specified in limit and it 
 it took query string as paginate to get value page number from it
 */ 
-const getPaginateRecords=async(paginate)=>{
+const getPaginateRecords=async(paginate) => {
     try{
         const db=await getDB();
         const sql=`select coin_pair.id,coin_pair.coin_pair,coin_pair.price, note_volume.note, note_volume.volume from coin_pair join note_volume on coin_pair.id=note_volume.coin_pair_id order by coin_pair.id limit ?,?`;
-        const values=[(paginate-1)*6,6];
+        const values=[(paginate - 1) * 6, 6];
         const [results]=await db.query(sql, values);
         return results;
     }catch(err){
@@ -48,7 +48,7 @@ const getPaginateRecords=async(paginate)=>{
 /*
 query for deleting a record from coin_pair which is automatically delete the related record at note_volume table
 */
-const deleteRecordQuery=async(id)=>{
+const deleteRecordQuery=async(id) => {
     try{
     const db=await getDB();
     const sql=`delete from coin_pair where id=?;`;
@@ -64,7 +64,7 @@ const deleteRecordQuery=async(id)=>{
 /*
 this query for testing it will retrieved note volume records to ensure that update and delete affecting on every records
 */
-const GetNoteVolumeRecordsQuery=async()=>{
+const GetNoteVolumeRecordsQuery=async() => {
     try{
         const db=await getDB();
         const sql=`select * from note_volume`;
@@ -77,7 +77,7 @@ const GetNoteVolumeRecordsQuery=async()=>{
 /*
 this query for searching by coin_pair return all coin_pair  that starts with the parameter
 */
-const SearchByCoinPairQuery=async(coin_pair,paginate)=>{
+const SearchByCoinPairQuery=async(coin_pair,paginate) => {
     try{
         const db=await getDB();
         const sql = `SELECT coin_pair.id, coin_pair.coin_pair, coin_pair.price, note_volume.volume, note_volume.note
@@ -86,7 +86,7 @@ const SearchByCoinPairQuery=async(coin_pair,paginate)=>{
                      WHERE coin_pair.coin_pair LIKE CONCAT(?, '%')
                      ORDER BY coin_pair.id
                      LIMIT ?, ?`;
-        const values=[coin_pair,(paginate-1)*6,6];
+        const values=[coin_pair,(paginate - 1) * 6,6];
         console.log(values);
         const results=await db.query(sql,values);
         if(results.length===0){
@@ -106,7 +106,7 @@ const SearchByPriceQuery=async(price,paginate)=>{
         const sql=`SELECT coin_pair.id,coin_pair.coin_pair,coin_pair.price,note_volume.volume,note_volume.note FROM coin_pair join note_volume on coin_pair.id=note_volume.coin_pair_id where coin_pair.price=? order by coin_pair.id
         limit ?,?`;
         console.log('paginate: ',);
-        const values=[price,(paginate-1)*6,6];
+        const values=[price,(paginate-1)*6, 6];
         const [results]=await db.query(sql,values);
         console.log(results);
         if(results.length===0){
@@ -128,10 +128,10 @@ const SearchByNoteQuery=async(note,paginate)=>{
         JOIN note_volume ON coin_pair.id = note_volume.coin_pair_id
         WHERE note_volume.note LIKE CONCAT(?, '%') order by coin_pair.id limit ?,?;
         `;
-        const values=[note,(paginate-1)*6,6];
+        const values=[note,(paginate - 1) * 6, 6];
         console.log(values);
         const [results]=await db.query(sql,values);
-        if(results.length===0){
+        if(results.length === 0){
             return [];
         }
         return results;
@@ -162,5 +162,39 @@ const SearchByVolumeQuery = async (volume, paginate) => {
         console.error('Error in filtering by volume:', err);
     }
 };
-module.exports={updateRecordQuery,getAllRecords,updateRecordQuery,getPaginateRecords,
-    deleteRecordQuery,GetNoteVolumeRecordsQuery,SearchByCoinPairQuery,SearchByNoteQuery,SearchByPriceQuery,SearchByVolumeQuery};
+const createRecordQuery=async(coin_pair,price,note,volume)=>{
+    try{
+        const db=await getDB();
+        let values=[];
+        let sql;
+        let result;
+        sql=`INSERT INTO coin_pair (coin_pair, price) VALUES (?, ?)`
+        values=[coin_pair,price];
+        result=await db.query(sql,values);
+        const id=result[0].insertId
+        sql=`INSERT into note_volume(note,volume,coin_pair_id) values(?,?,?)`;
+        values=[note,volume,id];
+        result=await db.query(sql,values);
+        console.log(result);
+        return result;
+
+
+    }catch(err){
+        console.log(`error is inserting records err:  ${err}`);
+    }
+
+}
+module.exports={
+    updateRecordQuery
+    ,getAllRecords
+    ,updateRecordQuery
+    ,getPaginateRecords,
+    deleteRecordQuery,
+    GetNoteVolumeRecordsQuery,
+    SearchByCoinPairQuery,
+    SearchByNoteQuery,
+    SearchByPriceQuery,
+    SearchByVolumeQuery,
+    createRecordQuery
+
+};

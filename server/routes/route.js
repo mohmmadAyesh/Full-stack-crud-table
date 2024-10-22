@@ -1,11 +1,15 @@
 const express=require('express');
-const {updateRecord,getAll,getPaginate,deleteRecord,getNoteVolumeRecords,
-getRecordsFilteredByCoinPair,
-getRecordsFilteredByNote,
-getRecordsFilteredByPrice,
-getRecordsFilteredByVolume
-
-}=require('../controller/controller.js');
+const {updateRecord,
+    getAll,
+    getPaginate,
+    deleteRecord,
+    getNoteVolumeRecords,
+    getRecordsFilteredByCoinPair,
+    getRecordsFilteredByNote,
+    getRecordsFilteredByPrice,
+    getRecordsFilteredByVolume,
+    createRecord
+} = require('../controller/controller.js');
 const router=express.Router();
 // updating one record by Id
 router.put('/update/:id',updateRecord);
@@ -23,6 +27,8 @@ router.post('/filter/price',getRecordsFilteredByPrice);
 router.post('/filter/note',getRecordsFilteredByNote);
 // filtering by volume
 router.post('/filter/volume',getRecordsFilteredByVolume);
+// create record
+router.post('/create',createRecord);
 //testing routes
 router.get('/test/note',getNoteVolumeRecords);
 module.exports=router;

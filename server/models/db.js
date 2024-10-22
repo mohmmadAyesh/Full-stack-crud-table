@@ -2,7 +2,7 @@ const mysql = require('mysql2/promise');
 require('dotenv').config();
 
 let db;
-
+// it will connect database and create db if its not exists
 async function ConnectDB() {
     if (db) {
         return db;

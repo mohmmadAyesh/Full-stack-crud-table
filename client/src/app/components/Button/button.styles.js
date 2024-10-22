@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 const ActionButton=styled.button`
-border: none;
+  border: none;
   background: none;
   cursor: pointer;
   font-size: 16px;
@@ -13,8 +13,8 @@ border: none;
   }
 
   svg {
-    width: 16px; /* Adjust size to fit in the table cell */
-    height: 16px; /* Adjust size to fit in the table cell */
+    width: 16px; 
+    height: 16px; 
   }
 `;
-export {ActionButton}
+export { ActionButton }

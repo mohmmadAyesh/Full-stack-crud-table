@@ -56,4 +56,4 @@ const Label=styled.label`
         background: rgb(3, 72, 72);
     }
 `;
-export {Wrapper,Field,Buttton,Input,Label}
+export { Wrapper, Field, Buttton, Input, Label}
